@@ -8,7 +8,7 @@ interface TaskListProps {
 }
 
 const TaskList: React.FC<TaskListProps> = ({ tasks, onToggleTask }) => {
-  if (tasks.length === 0) {
+  if (!tasks || tasks.length === 0) {
     return (
       <div className="text-center py-12">
         <div className="text-gray-400 text-6xl mb-4">📝</div>
