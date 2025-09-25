@@ -49,3 +49,10 @@ This is a React task management demo application built with Vite, TypeScript, an
 ## Supabase Integration
 
 The project includes `@supabase/supabase-js` as a dependency, indicating preparation for backend integration, though current implementation uses local state.
+
+## GitHub Information
+
+  - **GitHub Username**: mandarini
+  - **Repository Owner**: mandarini (same as username)
+  - **Preferred Method**: Use GitHub CLI (`gh` commands via Bash tool) for issue/PR operations if
+  MCP tools fail
