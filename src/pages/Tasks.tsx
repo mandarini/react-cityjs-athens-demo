@@ -1,16 +1,9 @@
-import React, { useState } from 'react';
+import React from 'react';
 import TaskList from '../components/TaskList';
-import { Task } from '../types/Task';
-import { Plus, RefreshCw } from 'lucide-react';
-
-const SAMPLE_TASKS: Task[] = [
-  { id: 1, title: 'Set up React project with Vite', completed: true },
-  { id: 2, title: 'Configure TypeScript and TailwindCSS', completed: true },
-  { id: 3, title: 'Implement routing with React Router', completed: true },
-  { id: 4, title: 'Create component architecture', completed: false },
-  { id: 5, title: 'Add responsive design', completed: false },
-  { id: 6, title: 'Implement task management features', completed: false },
-];
+import { useTasks } from '../hooks/useTasks';
+import { useAuth } from '../hooks/useAuth';
+import { Plus, RefreshCw, LogOut, AlertCircle } from 'lucide-react';
+import LoadingSpinner from '../components/Auth/LoadingSpinner';
 
 const RANDOM_TASK_TEMPLATES = [
   'Optimize application performance',
@@ -31,29 +24,37 @@ const RANDOM_TASK_TEMPLATES = [
 ];
 
 const Tasks: React.FC = () => {
-  const [tasks, setTasks] = useState<Task[]>(SAMPLE_TASKS);
+  const { user, signOut } = useAuth();
+  const { tasks, loading, error, addTask, toggleTask } = useTasks();
 
-  const addRandomTask = () => {
+  const addRandomTask = async () => {
     const randomTitle = RANDOM_TASK_TEMPLATES[
       Math.floor(Math.random() * RANDOM_TASK_TEMPLATES.length)
     ];
-    
-    const newTask: Task = {
-      id: Date.now(), // Simple ID generation for demo
-      title: randomTitle,
-      completed: false,
-    };
-    
-    setTasks(prev => [newTask, ...prev]);
+
+    const result = await addTask(randomTitle);
+    if (result.error) {
+      console.error('Failed to add task:', result.error);
+    }
   };
 
-  const toggleTask = (id: number) => {
-    setTasks(prev =>
-      prev.map(task =>
-        task.id === id ? { ...task, completed: !task.completed } : task
-      )
-    );
+  const handleToggleTask = async (id: number) => {
+    const result = await toggleTask(id);
+    if (result.error) {
+      console.error('Failed to toggle task:', result.error);
+    }
   };
+
+  const handleSignOut = async () => {
+    const { error } = await signOut();
+    if (error) {
+      console.error('Error signing out:', error);
+    }
+  };
+
+  if (loading) {
+    return <LoadingSpinner />;
+  }
 
   const completedCount = tasks.filter(task => task.completed).length;
   const totalCount = tasks.length;
@@ -68,19 +69,43 @@ const Tasks: React.FC = () => {
               <h1 className="text-3xl font-bold text-gray-900 mb-2">
                 Task Management Demo
               </h1>
-              <p className="text-gray-600">
-                Interactive task list showcasing dynamic state management
+              <p className="text-gray-600 mb-2">
+                Welcome back, {user?.email}! Manage your tasks with real-time synchronization
               </p>
             </div>
-            <button
-              onClick={addRandomTask}
-              className="inline-flex items-center px-6 py-3 bg-blue-600 text-white font-medium rounded-lg hover:bg-blue-700 transition-colors duration-200 shadow-lg hover:shadow-xl transform hover:scale-105"
-            >
-              <Plus className="w-5 h-5 mr-2" />
-              Add Random Task
-            </button>
+            <div className="flex flex-col sm:flex-row gap-2">
+              <button
+                onClick={addRandomTask}
+                className="inline-flex items-center px-6 py-3 bg-blue-600 text-white font-medium rounded-lg hover:bg-blue-700 transition-colors duration-200 shadow-lg hover:shadow-xl transform hover:scale-105"
+              >
+                <Plus className="w-5 h-5 mr-2" />
+                Add Random Task
+              </button>
+              <button
+                onClick={handleSignOut}
+                className="inline-flex items-center px-4 py-3 bg-gray-600 text-white font-medium rounded-lg hover:bg-gray-700 transition-colors duration-200"
+              >
+                <LogOut className="w-4 h-4 mr-2" />
+                Sign Out
+              </button>
+            </div>
           </div>
         </div>
+
+        {/* Error Display */}
+        {error && (
+          <div className="bg-red-50 border border-red-200 rounded-md p-4 mb-8">
+            <div className="flex">
+              <AlertCircle className="h-5 w-5 text-red-400" />
+              <div className="ml-3">
+                <h3 className="text-sm font-medium text-red-800">Error</h3>
+                <div className="mt-2 text-sm text-red-700">
+                  <p>{error}</p>
+                </div>
+              </div>
+            </div>
+          </div>
+        )}
 
         {/* Stats */}
         <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-8">
@@ -139,8 +164,8 @@ const Tasks: React.FC = () => {
               {completedCount} of {totalCount} tasks completed
             </p>
           </div>
-          
-          <TaskList tasks={tasks} onToggleTask={toggleTask} />
+
+          <TaskList tasks={tasks} onToggleTask={handleToggleTask} />
         </div>
       </div>
     </div>
