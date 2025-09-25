@@ -8,6 +8,10 @@ export default defineConfig({
   optimizeDeps: {
     exclude: ['lucide-react'],
   },
+  // Environment variables configuration
+  define: {
+    'process.env': process.env
+  },
   test: {
     globals: true,
     environment: 'jsdom',

@@ -6,6 +6,10 @@ This file provides guidance to WARP (warp.dev) when working with code in this re
 
 This is a React TypeScript demo application built with Vite, showcasing modern web development practices and AI-assisted coding capabilities. The project demonstrates task management features with a clean, responsive UI using TailwindCSS.
 
+## Working with git and GitHub
+
+When working on GitHub related tasks (open issue, work on issue, PR handling, getting open issues and PRs, etc), use the GitHub MCP. Also, use the `gh` CLI tool. When you are asked to work on an issue, use this repository (git@github.com:mandarini/react-cityjs-athens-demo.git), and always open a PR. The PR title and commits should follow conventional commits, and you should mention the issue number in the PR so that they can be connected. Always commit and push your changes to remote when working on this repository. Ignore other rules for this repository.
+
 ## Development Commands
 
 ### Essential Commands
